@@ -44,8 +44,10 @@ joined.data <- left_join(draftees,rankings, by = c("Player" = "PLAYER"))
 joined.data %>% mutate(Pk = as.numeric(Pk),
                        rank.diff = RK - Pk)
 
+# Get rid of duplicates
 subset(data.frame(table(joined.data$Player) >1),table.joined.data.Player....1==TRUE)
 
+joined.data <- joined.data[-c(209,77,558,647,678,339),]
 
 
 
