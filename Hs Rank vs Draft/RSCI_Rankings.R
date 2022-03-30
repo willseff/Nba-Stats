@@ -58,10 +58,17 @@ draft.score <- draft.joined %>%
 draft.score.subset <- draft.score %>% subset(n>10)
 
 
-# 
+# graphic
 
-rankings.drafted.grouped
+rankings.drafted.grouped <- rankings.drafted.grouped %>% mutate(draft.rate)
 
+
+ggplot(rankings.drafted.grouped, aes(x=RSCI, y = draft.rate)) + 
+  geom_col() +  stat_smooth(span = 0.5)
+
+
+lo <- loess(draft.rate~RSCI , rankings.drafted.grouped, span = 0.5)
+predict(lo)
 
 
 
