@@ -58,17 +58,35 @@ draft.score <- draft.joined %>%
 draft.score.subset <- draft.score %>% subset(n>10)
 
 
-# graphic
+# adjusted draft rate
 
 rankings.drafted.grouped <- rankings.drafted.grouped %>% mutate(draft.rate)
 
-
-ggplot(rankings.drafted.grouped, aes(x=RSCI, y = draft.rate)) + 
-  geom_col() +  stat_smooth(span = 0.5)
-
-
 lo <- loess(draft.rate~RSCI , rankings.drafted.grouped, span = 0.5)
-predict(lo)
+adjusted.draft.rate <- predict(lo) 
+adjusted.draft.rate[87:100] <- 0.118
 
+# Graphic for adjusted draft rate
+ggplot(rankings.drafted.grouped, aes(x=RSCI, y = draft.rate)) + 
+  geom_col() +  
+  stat_smooth(span = 0.5, se=FALSE) + 
+  geom_point(aes(x=1:100, y = adjusted.draft.rate))
 
+# adjusted weighted draft score
+
+adj.draft.joined <- rankings.drafted.grouped %>% 
+  cbind(adjusted.draft.rate) %>%
+  select(RSCI,adjusted.draft.rate) %>% 
+  right_join(rankings.drafted,
+             by = c("RSCI" = "RSCI")) %>% 
+  mutate(adjusted.weighted.draft.score = drafted-adjusted.draft.rate)
+
+# adjusted weighted draft score by college
+
+adj.draft.score <- adj.draft.joined %>% 
+  group_by(College) %>% 
+  summarise(adj.draft.score.total = sum(adjusted.weighted.draft.score),
+            n = n()) %>% mutate(adj.draft.score.avg = adj.draft.score.total/n)
+
+adj.draft.score.subset <- draft.score %>% subset(n>10)
 
