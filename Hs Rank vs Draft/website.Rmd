@@ -66,9 +66,15 @@ drafted.rate.college <- rankings.drafted %>%
             n = n(),
             avg.hsranking = mean(RSCI))
 
-p <- ggplot(drafted.rate.college, aes(x=avg.hsranking, y = draft.rate, size = n, college = College)) + geom_point(alpha=0.7)
+drafted.rate.college.plot <- drafted.rate.college %>% mutate(lab = ifelse(avg.hsranking < 33 & n > 2, College,""))
+
+p <- ggplot(drafted.rate.college.plot, aes(x=avg.hsranking, y = draft.rate, college = College)) + 
+  geom_point(alpha=0.7, aes(size = n)) + 
+  geom_text(aes(label=lab), nudge_x = -6)
 
 ggplotly(p)
+
+p
 
 ```
 
