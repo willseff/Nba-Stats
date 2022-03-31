@@ -106,7 +106,7 @@ ggplotly(p)
 ```
 The odds of a player being drafted to the NBA decrease as their ranking gets lower. Every prospect ranked 1 or 2 have been drafted into the NBA. There is some noise in the data so the actual chances to being drafted are modeled with the overlayed line. Interesting to see how tough it is to make it to the NBA. Anyone ranked outside the top 20 in high school rankings has an outside chance of being drafted. 
 
-Using these theoretical odds of being drafted, we can calculate how much each school increased their player’s chances of being drafted. This is turned into a draft score for each school. The higher the average draft score the better.
+Using these theoretical odds of being drafted, we can calculate how much each school increased their player’s chances of being drafted. This is turned into a draft score for each school. The higher the average draft score the better. A positive value indicates that the school increases a players chances of getting drafted relative to other top 100 players and negative values indicate the opposite. 	
 
 ```{r,warning=FALSE,message=FALSE}
 # adjusted weighted draft score
