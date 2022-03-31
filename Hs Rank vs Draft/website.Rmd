@@ -1,0 +1,108 @@
+---
+title: "Best Colleges for Developing NBA Talent"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+```{r,warning=FALSE,message=FALSE}
+library(dplyr)
+library(rvest)
+library(ggplot2)
+library(plotly)
+
+```
+
+Every year March Madness offers us a glimpse of the future stars of the NBA and we find our March Madness brackets filled with powerhouses of college basketball. Duke, Kentucky, Kansas, UNC, Villanova and so on.
+
+These teams are often the best so they must be the best programs at developing players between their time from high school prospects to professionals NBA players, one might believe. A quick look at the top of the draft boards and we will find it littered with players from the top programs in college basketball. 
+
+But do these teams really develop the best players or do they recruit the best players who were already on the trajectory to the NBA. Let’s look at the rate that prospects get drafted to the NBA based on their HS rankings
+
+
+```{r , echo=FALSE, ,warning=FALSE, message=FALSE}
+rankings <- data.frame(RSCI = numeric(0),
+                       Player = character(0),
+                       Pk = numeric(0),
+                       College = character(0))
+
+
+for(i in 2007:2020){
+  
+  url <- read_html(paste0("https://www.basketball-reference.com/awards/recruit_rankings_", i,".html"))
+  dat <- html_table(url, header=FALSE)[[1]]
+  colnames(dat) <- dat[2,]
+  dat <- dat %>% select(RSCI,Player,Pk, College) %>% tail(nrow(dat)-2)
+  dat <- dat %>% mutate(College = ifelse(College == "", "No College", College),
+                        Player = gsub("(college)","",Player, fixed = TRUE),
+                        RSCI = as.numeric(gsub("T","",RSCI)),
+                        Pk = as.numeric(Pk)) %>%
+    subset(RSCI != "RSCI" & RSCI != "")
+  
+  rankings <- rbind(rankings,dat)
+}
+
+avg.draft.pos <- rankings %>% group_by(RSCI) %>% summarise(average = mean(Pk, na.rm = TRUE))
+
+rankings.drafted <- rankings %>% mutate(drafted = !is.na(Pk))
+
+rankings.drafted.grouped <- rankings.drafted %>% 
+  group_by(RSCI) %>% 
+  summarise(average.draft.spot = mean(Pk, na.rm = TRUE), 
+            number.drafted = sum(drafted), 
+            total = n()) %>%
+  mutate(draft.rate = number.drafted/total)
+
+
+# percent drafted by college and average ranking
+
+drafted.rate.college <- rankings.drafted %>% 
+  group_by(College) %>% 
+  summarise(draft.rate = sum(drafted)/n(), 
+            n = n(),
+            avg.hsranking = mean(RSCI))
+
+p <- ggplot(drafted.rate.college, aes(x=avg.hsranking, y = draft.rate, size = n, college = College)) + geom_point(alpha=0.7)
+
+ggplotly(p)
+
+```
+
+```{r}
+
+# weighted draft score
+
+draft.joined <- rankings.drafted.grouped %>% 
+  select(RSCI,draft.rate) %>% 
+  right_join(rankings.drafted,
+             by = c("RSCI" = "RSCI")) %>% mutate(weighted.draft.score = drafted-draft.rate)
+
+# weighted draft score by college
+
+draft.score <- draft.joined %>% 
+  group_by(College) %>% 
+  summarise(draft.score.total = sum(weighted.draft.score),
+            n = n()) %>% mutate(draft.score.avg = draft.score.total/n)
+
+draft.score.subset <- draft.score %>% subset(n>10)
+
+
+# graphic
+
+rankings.drafted.grouped <- rankings.drafted.grouped %>% mutate(draft.rate)
+
+
+p <- ggplot(rankings.drafted.grouped, aes(x=RSCI, y = draft.rate)) + 
+  geom_col() +  stat_smooth(span = 0.5, method="loess") 
+
+ggplotly(p)
+
+lo <- loess(draft.rate~RSCI , rankings.drafted.grouped, span = 0.5)
+#predict(lo)
+
+
+```
