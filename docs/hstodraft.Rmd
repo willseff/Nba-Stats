@@ -128,7 +128,8 @@ adj.draft.score <- adj.draft.joined %>%
 adj.draft.score.subset <- adj.draft.score %>% subset(n>10) 
 
 library(DT)
-df <- (adj.draft.score.subset)
+df <- (adj.draft.score.subset%>% arrange(desc(adj.draft.score.avg)) %>% select(College,adj.draft.score.avg,n))
 DT::datatable(df)
 
 ```
+
