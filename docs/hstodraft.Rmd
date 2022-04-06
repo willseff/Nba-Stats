@@ -129,7 +129,33 @@ adj.draft.score.subset <- adj.draft.score %>% subset(n>10)
 
 library(DT)
 df <- (adj.draft.score.subset%>% arrange(desc(adj.draft.score.avg)) %>% select(College,adj.draft.score.avg,n))
-DT::datatable(df)
+datatable(df, caption = "Draft Score of NCAA Colleges (Min 10 top 100 players)",style = "default")
+
+adj.draft.score.subset.ordered <- adj.draft.score.subset%>% arrange(desc(adj.draft.score.avg))
+
+ggplot(data = adj.draft.score.subset.ordered, aes(x= reorder(College,desc(adj.draft.score.avg)), y = adj.draft.score.avg)) + geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+Here we can see the top schools according to the analysis.At the top we have Purdue which is significantly higher than all the other schools. A closer look at the players who have gone through the program reveals the following
+
+```{r}
+
+subset(rankings.drafted, College == "Purdue")
+
+```
+Purdue has recruited 11 top 100 players and 5 have been drafted to the NBA. That is quite an impressive rate considering that most of these players have been ranked pretty low and had a small chance of being drafted.
+
+On the other end of the spectrum, we have UNLV. The team, best known for their success in the 80s and 90s, has fallen on more difficult times as their top recruits have not had much success in making it to the NBA draft. Even some of the higher ranked prospects were not drafted such as Khem Birch and Brandon McCoy both ranked 11th of their class
+
+```{r}
+subset(rankings.drafted, College == "UNLV")
+
+```
+Lastly lets take a look at the draft scores of each school plotted with the number of top 100 prospects they have recruited. 
+
+```{r}
+p <- ggplot(adj.draft.score, aes(x= n, y = adj.draft.score.avg, college = College)) + geom_point(alpha = 0.7)
+
+ggplotly(p)
 
 ```
 
