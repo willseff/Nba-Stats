@@ -133,8 +133,12 @@ datatable(df, caption = "Draft Score of NCAA Colleges (Min 10 top 100 players)",
 
 adj.draft.score.subset.ordered <- adj.draft.score.subset%>% arrange(desc(adj.draft.score.avg))
 
-ggplot(data = adj.draft.score.subset.ordered, aes(x= reorder(College,desc(adj.draft.score.avg)), y = adj.draft.score.avg)) + geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+ggplot(data = adj.draft.score.subset.ordered, aes(x= reorder(College,desc(adj.draft.score.avg)), y = adj.draft.score.avg)) + geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  ggtitle("Draft Scores of Top NCAA Schools")+
+  xlab("School")+
+  ylab("Draft Score")
 ```
+
 Here we can see the top schools according to the analysis.At the top we have Purdue which is significantly higher than all the other schools. A closer look at the players who have gone through the program reveals the following
 
 ```{r}
@@ -153,9 +157,18 @@ subset(rankings.drafted, College == "UNLV")
 Lastly lets take a look at the draft scores of each school plotted with the number of top 100 prospects they have recruited. 
 
 ```{r}
-p <- ggplot(adj.draft.score, aes(x= n, y = adj.draft.score.avg, college = College)) + geom_point(alpha = 0.7)
+p <- ggplot(adj.draft.score, aes(x= n, y = adj.draft.score.avg, college = College)) + geom_point(alpha = 0.7) +
+  ggtitle("Draft Score vs Number of Top 100 Prospects") +
+  ylab("Draft Score") +
+  xlab("Number of Top 100 Prospects")
 
 ggplotly(p)
 
 ```
+So we can see that it is very difficult for teams to consistently have an above average draft score (0 being average) as they recruit a larger number of top 100 recruits. 
 
+One explanation is that schools that recruit a large number of top prospects don't aren't able to focus on their players and some get overlooked. Or perhaps those schools have more one and done players. Given only few months in college, the school probably has little impact on the players development. 
+
+The more cynical interpretation is that schools really don't have any impact on the development of players as we see schools with more top 100 prospects regress to the mean. The smaller schools are able to deviate further from the mean due to small sample size.
+
+Whatever the case it does seem like some schools have a track record of producing NBA players and others do not. When it comes to selecting a school, top prospects have many factors to consider and hopefully this analysis will help provide more clarity to their decisions. 
