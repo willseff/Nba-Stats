@@ -143,7 +143,7 @@ Here we can see the top schools according to the analysis.At the top we have Pur
 
 ```{r}
 
-subset(rankings.drafted, College == "Purdue")
+datatable(subset(rankings.drafted, College == "Purdue"), caption = "Draft Results of Purdue Top 100 Prospects")
 
 ```
 Purdue has recruited 11 top 100 players and 5 have been drafted to the NBA. That is quite an impressive rate considering that most of these players have been ranked pretty low and had a small chance of being drafted.
@@ -151,7 +151,7 @@ Purdue has recruited 11 top 100 players and 5 have been drafted to the NBA. That
 On the other end of the spectrum, we have UNLV. The team, best known for their success in the 80s and 90s, has fallen on more difficult times as their top recruits have not had much success in making it to the NBA draft. Even some of the higher ranked prospects were not drafted such as Khem Birch and Brandon McCoy both ranked 11th of their class
 
 ```{r}
-subset(rankings.drafted, College == "UNLV")
+subset(rankings.drafted, College == "UNLV") %>% datatable(caption = 'Draft Results of UNLV Top 100 Prospects')
 
 ```
 Lastly lets take a look at the draft scores of each school plotted with the number of top 100 prospects they have recruited. 
